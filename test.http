@@ -1,0 +1,31 @@
+### 1: Obtener todos los usuarios
+GET {{url}}/users
+Authorization: {{mi_token}}
+
+
+###
+
+### Prueba 2: Crear un post (POST)
+POST  {{url}}/users
+Authorization: {{mi_token}}
+
+}# Prueba 3: Obtener todos los usuarios
+GET https://jsonplaceholder.typicode.com/users
+Content-Type: application/json
+{
+  "title": "Configurando Neovim",
+  "body": "Probando Kulala en mi termux",
+  "UserId": 1
+}
+###
+
+### Prueba 4: Crear un post (POST)
+POST https://jsonplaceholder.typicode.com/posts
+Content-Type: application/json
+
+{
+    "title": "Configurando Neovim",
+    "body": "Probando Kulala en Termux",
+    "userId": 1
+}
+
