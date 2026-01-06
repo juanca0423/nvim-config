@@ -56,6 +56,9 @@ vim.keymap.set('n', '<leader>q', ':bdelete<CR>', { desc = "Cerrar archivo" })
 vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { desc = "Renombrar símbolo" })
 -- Abrir terminal abajo
 vim.keymap.set('n', '<leader>st', ':sp | terminal<CR>i', { desc = "Abrir Terminal" })
+-- Ejecutar tests de Go normales en la terminal de Neovim
+vim.keymap.set('n', '<leader>tf', ':term go test -v %<CR>', { desc = "Correr tests del archivo actual" })
+--
 vim.keymap.set('n', '<leader>w', ':w<CR>')
 vim.keymap.set('n', '<leader>W', ':wq<CR>')
 vim.keymap.set('n', '<leader>ff', builtin.find_files,{})
