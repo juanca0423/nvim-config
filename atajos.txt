@@ -1,0 +1,24 @@
+Aquí tienes tu Guía Rápida (Cheat Sheet) con los atajos que configuramos, para que la tengas a mano mientras te acostumbras a tu nuevo Neovim:
+​🐹 Desarrollo en Go
+​gd → Ir a definición (Ver dónde se creó una función/variable).
+​K → Ver documentación (Ventana flotante con manual de Go).
+​gr → Ver referencias (Dónde más se usa esto).
+​<leader>rn → Renombrar (Cambia el nombre en todo el proyecto de forma segura).
+​iferr + Tab → Snippet de error (Escribe el bloque de error automáticamente).
+​📂 Navegación y Archivos
+​<leader>e → Explorador de archivos (Abrir/cerrar NvimTree).
+​<leader>ff → Buscar archivo (Por nombre con Telescope).
+​<leader>fg → Buscar texto (Buscar una palabra dentro de todos los archivos).
+​💻 Terminal y Utilidades
+​Ctrl + \ → ToggleTerm (Abrir/ocultar terminal rápido).
+​Esc Esc → Modo Normal en Terminal (Para poder moverte o cerrar con :q).
+​( [ { → Cierre automático (Se cierran solos gracias a Autopairs).
+​💾 Al Guardar (:w)
+​Se Organizan los imports automáticamente.
+​Se Formatea el código (Gofmt).
+
+​<leader>db: Pones/quitas la "mina" (breakpoint).
+​<leader>dc: Inicias la misión (continuar/empezar).
+​<leader>dn: Vas a la siguiente línea (Next).
+​<leader>di: Te metes dentro de la función (Into).
+​<leader>dq: Apagas todo y limpias la pantalla (Quit).

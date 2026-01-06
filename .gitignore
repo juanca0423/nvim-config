@@ -1,0 +1,10 @@
+
+ # no subir plugins instalados ni sesiones
+ .repro/
+ lazy-lock.json
+ /lazy/
+ /mason/
+ undo/
+ backup/
+ swap/
+
