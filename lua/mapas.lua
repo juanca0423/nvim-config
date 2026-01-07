@@ -54,11 +54,39 @@ vim.keymap.set('n', '<leader>q', ':bdelete<CR>', { desc = "Cerrar archivo" })
     
 -- Renombrar variable/función en todo el proyecto
 vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { desc = "Renombrar símbolo" })
+
 -- Abrir terminal abajo
 vim.keymap.set('n', '<leader>st', ':sp | terminal<CR>i', { desc = "Abrir Terminal" })
+
 -- Ejecutar tests de Go normales en la terminal de Neovim
 vim.keymap.set('n', '<leader>tf', ':term go test -v %<CR>', { desc = "Correr tests del archivo actual" })
---
+
+-- Este mapeo arregla el error "undefined" y activa los iconos
+vim.keymap.set('n', '<leader>tr', function()
+  require("neotest").run.run(vim.fn.getcwd())
+end, {desc = "Correr tests del paquete completo"})
+
+-- Correr solo el test más cercano al cursor
+vim.keymap.set('n', '<leader>tn', function()
+    require("neotest").run.run()
+end, { desc = "Correr test cercano" })
+
+-- Ver la salida detallada (importante para ver por qué fallan)
+vim.keymap.set('n', '<leader>to', function() 
+    require("neotest").output.open({ enter = true })
+end, { desc = "Ver salida del test" })
+
+vim.keymap.set('n', '<leader>ts', function() require('neotest').summary.toggle() end, { desc = "Ver Sumario de Tests" })
+
+-- Correr test y mandar errores a una lista visible
+vim.keymap.set('n', '<leader>tt', function()
+    -- Ejecuta go test y captura la salida
+    vim.cmd('set makeprg=go\\ test\\ -v')
+    vim.cmd('make %')
+    -- Abre la ventana de errores abajo si hay fallos
+    vim.cmd('copen')
+end, { desc = "Ejecutar Go Test Profesional" })
+
 vim.keymap.set('n', '<leader>w', ':w<CR>')
 vim.keymap.set('n', '<leader>W', ':wq<CR>')
 vim.keymap.set('n', '<leader>ff', builtin.find_files,{})

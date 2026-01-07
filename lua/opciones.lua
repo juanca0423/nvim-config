@@ -13,7 +13,7 @@ vim.opt.tabstop = 2
 vim.opt.backup = false       -- No crea archivos .bak
 vim.opt.writebackup = false  -- No crea respaldos antes de guardar
 vim.opt.swapfile = false
-vim.opt.signcolumn = "yes" -- Fuerza a Neovim a mostrar siempre la columna de iconos
+vim.opt.signcolumn = "yes:2" -- Fuerza a Neovim a mostrar siempre la columna de iconos
 
 -- Configuración de cómo se muestran los diagnósticos
 vim.diagnostic.config({
@@ -24,7 +24,7 @@ vim.diagnostic.config({
   severity_sort = true,
   float = {
     border = 'rounded',
-    source = false--'always',
+    source = true,--'always',
   },
 })
 
@@ -35,4 +35,26 @@ for type, icon in pairs(signs) do
 end
 
 vim.opt.cmdheight = 0 -- Solo aparece cuando escribes un comando
+
+-- --- Mostrar errores automáticamente al detener el cursor ---
+
+-- Tiempo en milisegundos que el cursor debe estar quieto (500ms es equilibrado)
+vim.opt.updatetime = 500
+
+vim.api.nvim_create_autocmd("CursorHold", {
+  callback = function()
+    -- Solo abre la ventana si hay un error (diagnóstico) bajo el cursor
+    vim.diagnostic.open_float(nil, {
+        focusable = false,
+        close_events = { "CursorMoved", "CursorMovedI", "BufHidden", "InsertCharPre" },
+        border = "rounded",
+        source = "always", -- Te dice si el error viene de Go, Neotest, etc.
+        prefix = " ",
+        scope = "cursor",
+    })
+  end,
+})
+
+vim.cmd([[highlight DiagnosticSignError guifg=#FF0000]])
+vim.opt.signcolumn = "yes"
 

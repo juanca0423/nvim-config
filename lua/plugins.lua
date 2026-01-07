@@ -86,7 +86,7 @@ return {
     })
   end,
   },
-{
+  {
   'nvim-lualine/lualine.nvim',
   dependencies = { 'nvim-tree/nvim-web-devicons' },
   config = function()
@@ -166,17 +166,17 @@ return {
                 annotation_convention = "jsdoc"
               }
             },
-              typescript = {
-                template = {
-                  annotation_convention = "tsdoc"
-                }
-              },
-                -- También funciona para Go
-              go = {
-                template = {
-                  annotation_convention = "godoc"
-                }
+            typescript = {
+              template = {
+                annotation_convention = "tsdoc"
               }
+            },
+                -- También funciona para Go
+            go =  {
+              template = {
+                annotation_convention = "godoc"
+              }
+            }
           }
       })
    end,
@@ -253,7 +253,7 @@ return {
             name = "Debug",
             request = "launch",
             program = "${file}",
-            build_flags = "-gcflags='all=-N -l'",  
+            build_flags = "-gcflags='all=-N -l'",
           },
         },
       })
@@ -293,6 +293,43 @@ return {
     require('kulala').setup({})
   end
 },
-
+{
+  "nvim-neotest/neotest",
+  dependenzcies = {
+    "nvim-neotest/nvim-nio",
+    "nvim-lua/plenary.nvim",
+    "antoinemadec/FixCursorHold.nvim",
+    "nvim-treesitter/nvim-treesitter",
+    "nvim-neotest/neotest-go", -- Adaptador para Go
+  },
+  config = function()
+    require("neotest").setup({
+      adapters = {
+        require("neotest-go")({
+           recursive = true,
+           go_test_args = {"-v", "-race", "-count=1"},
+        })
+      },
+      diagnostic = { enabled = true },
+      status = { signs = true, virtual_text = true },
+    })
+    local signs = {
+      neotest_passed = { text = "✔", texthl = "DiagnosticOk" },
+      neotest_failed = { text = "✖", texthl = "DiagnosticError" },
+      neotest_running = { text = "󱎫", texthl = "DiagnosticWarn" },
+      neotest_unknown = { text = "❓", texthl = "DiagnosticUnknown" },
+      neotest_skipped = { text = "ﰸ", texthl = "DiagnosticInfo" },
+    }
+    -- El bucle for corregido (tenías dos comas y faltaba cerrar llaves correctamente)
+    for name, config_sign in pairs(signs) do
+      vim.fn.sign_define(name, {
+        text = config_sign.text,
+        texthl = config_sign.texthl,
+        linehl = "",
+        numhl = ""
+      })
+    end
+  end
+  }
 }
 
