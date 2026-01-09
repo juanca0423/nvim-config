@@ -1,11 +1,20 @@
 return {
+-- 3. Treesitter: Resaltado de sintaxis inteligente 🌳
+  {
+    "nvim-treesitter/nvim-treesitter",
+    lazy=false,
+    build = ":TSUpdate",
+    Config = function()
+      require("config.treesitter")
+    end
+  },
   -- 1. Colores para que Termux se vea increíble 🎨
   {
     "catppuccin/nvim",
     name = "catppuccin",
     priority = 1000, -- Cargar antes que lo demás
     config = function()
-      require("catppuccin").setup({
+    require("catppuccin").setup({
         flavour = "mocha", -- latte, frappe, macchiato, mocha
         term_colors = true, -- Esto ayuda a que los colores resalten más en terminal
         integrations={
@@ -21,14 +30,6 @@ return {
     dependencies = {'nvim-lua/plenary.nvim'},
     config = function()
       require("config.telescope")
-    end
-  },
-  -- 3. Treesitter: Resaltado de sintaxis inteligente 🌳
-  {
-    "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
-    Config = function()
-      require("config.treesitter")
     end
   },
   -- Extensión 1: FZF Native para velocidad máxima ⚡
@@ -295,41 +296,48 @@ return {
 },
 {
   "nvim-neotest/neotest",
-  dependenzcies = {
+  dependencies = {
     "nvim-neotest/nvim-nio",
     "nvim-lua/plenary.nvim",
     "antoinemadec/FixCursorHold.nvim",
     "nvim-treesitter/nvim-treesitter",
-    "nvim-neotest/neotest-go", -- Adaptador para Go
+    "nvim-neotest/neotest-go",
   },
   config = function()
+    vim.g.neotest_root = vim.fn.getcwd()
     require("neotest").setup({
       adapters = {
         require("neotest-go")({
-           recursive = true,
-           go_test_args = {"-v", "-race", "-count=1"},
+           --recursive = true,
+           experimental_fast_directories = false, -- Desactivar esto ayuda en Termux
+           --go_test_args = {"-v", "-race", "-count=1"},
+           --show_test_output=true,
         })
+      },{
+        discovery={
+          enabled=true,
+          filter_dir = function(name)
+            return name ~= "vendor"
+          end,
+        }
       },
-      diagnostic = { enabled = true },
-      status = { signs = true, virtual_text = true },
-    })
-    local signs = {
-      neotest_passed = { text = "✔", texthl = "DiagnosticOk" },
-      neotest_failed = { text = "✖", texthl = "DiagnosticError" },
-      neotest_running = { text = "󱎫", texthl = "DiagnosticWarn" },
-      neotest_unknown = { text = "❓", texthl = "DiagnosticUnknown" },
-      neotest_skipped = { text = "ﰸ", texthl = "DiagnosticInfo" },
-    }
-    -- El bucle for corregido (tenías dos comas y faltaba cerrar llaves correctamente)
-    for name, config_sign in pairs(signs) do
-      vim.fn.sign_define(name, {
-        text = config_sign.text,
-        texthl = config_sign.texthl,
-        linehl = "",
-        numhl = ""
+        status = { enabled = true, signs = true },
+        icons = { passed = "P", failed = "X", running = "R" },
+        diagnostic = { enabled = true },
+      -- status = { signs = true, virtual_text = true },
+        floating={
+          border = "rounded",
+          max_height = 0.8,
+          max_width = 0.9,
+          options = {}
+        },
+        strategies={
+          integrated={
+            width=120
+          }
+        },
       })
     end
-  end
   }
 }
 

@@ -1,6 +1,8 @@
 
  # no subir plugins instalados ni sesiones
  .repro/
+ ./lua/opt/
+./lua/config/
  lazy-lock.json
  /lazy/
  /mason/

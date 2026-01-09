@@ -1,4 +1,3 @@
-vim.g.mapleader=','
 vim.g.perl_host_prog = '/data/data/com.termux/files/usr/bin/perl'
 vim.g.python3_host_prog = '/data/data/com.termux/files/usr/bin/python3.12'
 
@@ -13,7 +12,8 @@ vim.opt.tabstop = 2
 vim.opt.backup = false       -- No crea archivos .bak
 vim.opt.writebackup = false  -- No crea respaldos antes de guardar
 vim.opt.swapfile = false
-vim.opt.signcolumn = "yes:2" -- Fuerza a Neovim a mostrar siempre la columna de iconos
+vim.opt.signcolumn = "yes:2"
+vim.cmd([[highlight NeotestPassed guifg=#00FF00 gui=bold]])
 
 -- Configuración de cómo se muestran los diagnósticos
 vim.diagnostic.config({
@@ -58,3 +58,18 @@ vim.api.nvim_create_autocmd("CursorHold", {
 vim.cmd([[highlight DiagnosticSignError guifg=#FF0000]])
 vim.opt.signcolumn = "yes"
 
+-- Forzamos la definición de los signos que usa Neotest
+local signs = {
+  {name = "neotest_passed", text = "✔", texthl = "DiagnosticOk" },
+  { name = "neotest_failed", text = "✖", texthl = "DiagnosticError" },
+  { name = "neotest_running", text = "󱎫", texthl = "DiagnosticWarn" },
+}
+for _, sign in ipairs(signs) do
+  vim.fn.sign_define(sign.name, {
+    text = sign.text,
+    texthl = sign.texthl,
+    linehl = "",
+    numhl ="",
+  })
+end
+vim.opt.signcolumn = "yes"
