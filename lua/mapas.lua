@@ -1,7 +1,6 @@
 local dap = require('dap')
 local dapui = require('dapui')
 local bufopts = { noremap=true, silent=true }
-local nt = require("neotest")
 
 vim.keymap.set('n', '<leader>b', require('telescope.builtin').buffers, { desc = "Listar buffers" })
 
@@ -56,32 +55,6 @@ vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { desc = "Renombrar símbo
 
 -- Abrir terminal abajo
 vim.keymap.set('n', '<leader>st', ':sp | terminal<CR>i', { desc = "Abrir Terminal" })
-
-
--- Reemplaza tus mapas actuales por estos:
-
--- Correr test cercano
-vim.keymap.set('n', '<leader>tr', function() nt.run.run(vim.fn.expand("%")) end, {desc="test abalo del cursor"})
-
--- Ver salida (Output) -> ESTO ES EL ,to
-vim.keymap.set('n', '<leader>to', function() nt.output.open({ enter = true }) end,{desc="output"})
-
--- Ver Sumario -> ESTO ES EL ,ts
-vim.keymap.set('n', '<leader>ts', function() nt.summary.toggle() end,{desc="toggle sumario"})
-
--- Correr archivo completo y abrir ventana -> ESTO ES EL ,tt
-vim.keymap.set('n', '<leader>tt', function()
-    nt.run.run(vim.fn.expand("%"))
-    --nt.output.open()
-end,{desc="archivo completo ventana"})
-
--- Ejecutar tests de Go normales en la terminal de Neovim
-vim.keymap.set('n', '<leader>tf', ':term go test -v %<CR>', { desc = "Correr tests del archivo actual" })
-
--- Correr solo el test más cercano al cursor
-vim.keymap.set('n', '<leader>tn', function()
-    require("neotest").run.run()
-end, { desc = "Correr test cercano" })
 
 vim.keymap.set('n', '<leader>w', ':w<CR>')
 vim.keymap.set('n', '<leader>W', ':wq<CR>')

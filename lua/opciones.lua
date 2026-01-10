@@ -58,18 +58,3 @@ vim.api.nvim_create_autocmd("CursorHold", {
 vim.cmd([[highlight DiagnosticSignError guifg=#FF0000]])
 vim.opt.signcolumn = "yes"
 
--- Forzamos la definición de los signos que usa Neotest
-local signs = {
-  {name = "neotest_passed", text = "✔", texthl = "DiagnosticOk" },
-  { name = "neotest_failed", text = "✖", texthl = "DiagnosticError" },
-  { name = "neotest_running", text = "󱎫", texthl = "DiagnosticWarn" },
-}
-for _, sign in ipairs(signs) do
-  vim.fn.sign_define(sign.name, {
-    text = sign.text,
-    texthl = sign.texthl,
-    linehl = "",
-    numhl ="",
-  })
-end
-vim.opt.signcolumn = "yes"

@@ -3,6 +3,7 @@ return {
   lazy=false,
   build = ":TSUpdate",
   Config = function()
+    --vim.opt.runtimepath:prepend(vim.fn.stdpath("config") .. "/queries")
     require('nvim-treesitter.configs').setup({
   -- Instalación de lenguajes automática  
     ensure_installed = {"lua", "python", "javascript", "bash","go", "vim", "vimdoc"},
