@@ -23,6 +23,14 @@ return {
       local opts = { capabilities = capabilities }
 
       if server == "lua_ls" then
+        opts.capabilities.textDocument = {
+          completion = {
+            completionItem = {
+              snippetSupport = true
+            }
+          }
+        }
+        opts.capabilities.offsetEncoding = {"utf-8"}
         opts.settings = {
           Lua = {
             diagnostics = { globals = { 'vim' } },
@@ -33,7 +41,6 @@ return {
           },
         }
       end
-
       vim.lsp.config(server, opts)
       vim.lsp.enable(server)
     end
@@ -42,10 +49,13 @@ return {
     vim.api.nvim_create_autocmd("BufWritePre", {
       pattern = { "*.go", "*.js", "*.jsx", "*.ts", "*.tsx" },
       callback = function()
-        local params = vim.lsp.util.make_range_params(0, "utf-8")
-        params.context = { only = { "source.organizeImports" }, diagnostics = {} }
-        vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 1000)
-        vim.lsp.buf.format({ timeout_ms = 1000 })
+        -- 1. Organizar imports de forma nativa
+        vim.lsp.buf.code_action({
+          context = { only = { "source.organizeImports" } },
+          apply = true
+        })
+        -- 2. Formatear el código
+        vim.lsp.buf.format({ timeout_ms = 2000 })
       end,
     })
   end,

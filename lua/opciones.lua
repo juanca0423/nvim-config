@@ -1,23 +1,25 @@
 vim.g.perl_host_prog = '/data/data/com.termux/files/usr/bin/perl'
-vim.g.python3_host_prog = '/data/data/com.termux/files/usr/bin/python3.12'
+vim.g.python3_host_prog = '/data/data/com.termux/files/usr/bin/python3'
 
 vim.opt.number = true
-vim.opt.mouse = "a"
 vim.opt.relativenumber = true
+vim.opt.mouse = "a"
+vim.opt.signcolumn = "yes"
 vim.opt.smartcase = true
+vim.opt.updatetime = 500
 vim.opt.timeoutlen = 1500
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 vim.opt.tabstop = 2
-vim.opt.backup = false       -- No crea archivos .bak
-vim.opt.writebackup = false  -- No crea respaldos antes de guardar
+vim.opt.backup = false
+vim.opt.writebackup = false
 vim.opt.swapfile = false
-vim.opt.signcolumn = "yes:2"
-vim.cmd([[highlight NeotestPassed guifg=#00FF00 gui=bold]])
+vim.opt.wildignorecase = true
+vim.opt.wildmode = "longest:full,full"
 
 -- Configuración de cómo se muestran los diagnósticos
 vim.diagnostic.config({
-  virtual_text = true, -- Muestra el error al final de la línea
+  virtual_text = {prefix = '*'},
   signs = true,        -- Activa los iconos en el margen izquierdo
   update_in_insert = false,
   underline = true,
@@ -28,33 +30,41 @@ vim.diagnostic.config({
   },
 })
 
-local signs = { Error = " ", Warn = " ", Hint = "󰌵 ", Info = " " }
+-- Definición moderna de iconos (compatible con Neovim 0.10+)
+local signs = { Error = "E", Warn = "W", Hint = "H", Info = "I" }
 for type, icon in pairs(signs) do
   local hl = "DiagnosticSign" .. type
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
 
+-- Esto asegura que los diagnósticos usen esos iconos
+--  .
+vim.diagnostic.config({
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = signs.Error,
+      [vim.diagnostic.severity.WARN] = signs.Warn,
+      [vim.diagnostic.severity.HINT] = signs.Hint,
+      [vim.diagnostic.severity.INFO] = signs.Info,
+    },
+  },
+})
+
 vim.opt.cmdheight = 0 -- Solo aparece cuando escribes un comando
 
 -- --- Mostrar errores automáticamente al detener el cursor ---
 
--- Tiempo en milisegundos que el cursor debe estar quieto (500ms es equilibrado)
-vim.opt.updatetime = 500
-
 vim.api.nvim_create_autocmd("CursorHold", {
   callback = function()
-    -- Solo abre la ventana si hay un error (diagnóstico) bajo el cursor
-    vim.diagnostic.open_float(nil, {
+    -- Verificamos el modo de forma más segura
+    local mode = vim.api.nvim_get_mode().mode
+    if mode == 'n' then
+      vim.diagnostic.open_float(nil, {
         focusable = false,
-        close_events = { "CursorMoved", "CursorMovedI", "BufHidden", "InsertCharPre" },
-        border = "rounded",
-        source = "always", -- Te dice si el error viene de Go, Neotest, etc.
-        prefix = " ",
         scope = "cursor",
-    })
+        border = "rounded",
+        source = "always",
+      })
+    end
   end,
 })
-
-vim.cmd([[highlight DiagnosticSignError guifg=#FF0000]])
-vim.opt.signcolumn = "yes"
-
