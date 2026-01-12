@@ -1,129 +1,81 @@
-local dap = require('dap')
-local dapui = require('dapui')
-local bufopts = { noremap=true, silent=true }
 
-vim.keymap.set('n', '<leader>b', require('telescope.builtin').buffers, { desc = "Listar buffers" })
-
---Pone el "punto rojo" donde se detendrá el código.
-vim.keymap.set('n', '<leader>db', dap.toggle_breakpoint)
-
--- Iniciar o continuar (Sustituye a F5)
-vim.keymap.set('n', '<leader>dc', dap.continue, { desc = "Debug: Continuar" })
-
--- Paso a paso / Saltar línea (Sustituye a F10)
-vim.keymap.set('n', '<leader>dn', dap.step_over, { desc = "Debug: Siguiente línea" })
-vim.keymap.set("n", "<leader>df", ":lua require('neogen').generate()<CR>", { desc = "Generar Documentación" })
-
--- Entrar en función (Sustituye a F11)
-vim.keymap.set('n', '<leader>di', dap.step_into, { desc = "Debug: Entrar a función" })
-
--- Salir de función (Sustituye a F12)
-vim.keymap.set('n', '<leader>do', dap.step_out, { desc = "Debug: Salir de función" })
-
--- Poner/Quitar punto de interrupción
-vim.keymap.set('n', '<leader>db', dap.toggle_breakpoint, { desc = "Debug: Breakpoint" })
-
--- Reiniciar sesión de debug
-vim.keymap.set('n', '<leader>dr', dap.restart, { desc = "Debug: Reiniciar" })
-
--- Detener debug y cerrar interfaz
-vim.keymap.set('n', '<leader>du', function() require('dapui').toggle() end, { desc = "Toggle Debug UI" })
-
-vim.keymap.set("n","<leader>e",":Ex<CR>")
-
-local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>gg', ':term lazygit<CR>', { desc = "Abrir Lazygit" })
-
--- Atajos específicos para Go Tests
-vim.keymap.set('n', '<leader>gt', function() require('dap-go').debug_test() end, { desc = "Depurar Test actual" })
-
-vim.keymap.set('n', '<leader>gl', function() require('dap-go').debug_last_test() end, { desc = "Depurar último Test" })
--- -- Atajo para ver el historial
-vim.keymap.set("n", "<leader>h", ":Telescope yank_history<CR>", { desc = "Historial de copiado" })
-
-  -- Peticiones HTTP
-vim.keymap.set('n', '<leader>hr', function() require('kulala').run() end, { desc = "Ejecutar petición HTTP" })
-
-vim.keymap.set('n', '<leader>hn', function() require('kulala').jump_next() end, { desc = "Siguiente petición" })
-
-vim.keymap.set('n', '<leader>hp', function() require('kulala').jump_prev() end, { desc = "Petición anterior" })
--- Cerrar buffer actual con un atajo rápido
-vim.keymap.set('n', '<leader>q', ':bdelete<CR>', { desc = "Cerrar archivo" })
-
--- Renombrar variable/función en todo el proyecto
-vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { desc = "Renombrar símbolo" })
-
--- Abrir terminal abajo
-vim.keymap.set('n', '<leader>st', ':sp | terminal<CR>i', { desc = "Abrir Terminal" })
-
-vim.keymap.set('n', '<leader>w', ':w<CR>')
-vim.keymap.set('n', '<leader>W', ':wq<CR>')
-vim.keymap.set('n', '<leader>ff', builtin.find_files,{})
-vim.keymap.set('n', '<leader>fg', builtin.live_grep,{})
-vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', { silent = true })
-
--- Ir a la definición (El sustituto moderno y potente)
-vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
---
--- -- Ver implementaciones (Útil en Go para interfaces)
-vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
---
--- -- Ver dónde se usa una función/variable
-vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
--- -- Ver firma de la función (qué argumentos recibe)
-vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
---
--- Ver documentación (Hover)
-vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = "Ver documentación" })
-
--- Ver ayuda de firma (mientras escribes los argumentos)
-vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, { desc = "Ayuda de firma" })
-
--- Salir de la terminal más fácil con Esc Esc
-vim.keymap.set('t', '<Esc><Esc>', [[<C-\><C-n>]], { desc = "Salir modo terminal" })
-
-require("toggleterm").setup({
-  size = 15, -- Tamaño de la terminal
-  open_mapping = [[<C-\>]], -- Con Ctrl + \ la abres y cierras
-  shade_terminals = true,
-  direction = 'horizontal', -- Aparece abajo. También puedes usar 'float'
-  close_on_exit = true,
-})
-
--- Función para que Esc Esc funcione dentro de ToggleTerm
-function _G.set_terminal_keymaps()
-  local opts = {buffer = 0}
-  vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
-  vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
-end
-
--- Solo oculta el texto flotante (virtual text)
-vim.keymap.set('n', '<leader>v', function()
-  local is_enabled = vim.diagnostic.config().virtual_text
-  vim.diagnostic.config({ virtual_text = not is_enabled })
-end)
-
+-- =============================================================================
+-- KEYMAPS GENERALES (Archivos y Sistema)
+-- =============================================================================
+vim.keymap.set('n', '<leader>w', ':w<CR>', { desc = "Guardar" })
+vim.keymap.set('n', '<leader>W', ':wq<CR>', { desc = "Guardar y Salir" })
+vim.keymap.set('n', '<leader>q', ':bdelete<CR>', { desc = "Cerrar Buffer actual" })
+vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', { silent = true, desc = "Explorador de archivos" })
 vim.keymap.set('n', '<Tab>', ':BufferLineCycleNext<CR>', { desc = "Siguiente pestaña" })
-
 vim.keymap.set('n', '<S-Tab>', ':BufferLineCyclePrev<CR>', { desc = "Pestaña anterior" })
 
--- Abrir/Cerrar el bloque donde está el cursor (Toggle)
--- -- 'za' es el comando estándar, pero puedes crear uno con leader si prefieres:
-vim.keymap.set('n', '<leader>zz', 'za', { desc = "Plegar/Desplegar bloque" })
---
--- -- Abrir todos los pliegues (Desplegar todo el archivo)
-vim.keymap.set('n', 'zr', require('ufo').openAllFolds, { desc = "Abrir todos los pliegues" })
---
--- -- Cerrar todos los pliegues (Colapsar todo el archivo)  
-vim.keymap.set('n', 'zm', require('ufo').closeAllFolds, { desc = "Cerrar todos los pliegues" })
---
--- -- Peek Fold (Ver qué hay dentro de un pliegue sin abrirlo)
--- -- Esto es genial: te muestra una ventanita flotante con el contenido
-vim.keymap.set('n', 'zk', function()
-  local winid = require('ufo').peekFoldedLinesUnderCursor()
-  if not winid then
-    vim.lsp.buf.hover() -- Si no hay pliegue, intenta mostrar información de LSP
-  end
-end, { desc = "Vista previa del pliegue" })
+-- =============================================================================
+-- LSP: INTELIGENCIA Y ERRORES (gd, gr, etc.)
+-- =============================================================================
+vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = "Ir a Definición" })
+vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, { desc = "Ir a Implementación" })
+vim.keymap.set('n', 'gr', vim.lsp.buf.references, { desc = "Ver Referencias" })
+vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = "Ver Documentación (Hover)" })
+vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { desc = "Renombrar símbolo" })
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Acciones de código (Fix)" })
+vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, { desc = "Ayuda de firma" })
+
+-- Diagnósticos (Errores y Warnings)
+vim.keymap.set("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, { desc = "Siguiente Error" })
+vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, { desc = "Error Anterior" })
+vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Ver Error flotante" })
+vim.keymap.set('n', '<leader>v', function()
+  vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })
+end, { desc = "Toggle Texto Virtual" })
+
+-- =============================================================================
+-- TELESCOPE: BUSCADORES
+-- =============================================================================
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = "Buscar Archivos" })
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = "Buscar Texto (Grep)" })
+vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = "Buscar Buffers" })
+vim.keymap.set('n', '<leader>fr', builtin.oldfiles, { desc = "Archivos Recientes" })
+vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = "Buscar Ayuda" })
+vim.keymap.set("n", "<leader>h", ":Telescope yank_history<CR>", { desc = "Historial de Portapapeles" })
+vim.keymap.set('n', '<leader>fn', function()
+    builtin.find_files({ cwd = vim.fn.stdpath("config") })
+end, { desc = 'Buscar en Config de Neovim' })
+
+-- =============================================================================
+-- DAP: DEBUGGING (Depuración)
+-- =============================================================================
+local dap = require('dap')
+vim.keymap.set('n', '<leader>db', dap.toggle_breakpoint, { desc = "Poner/Quitar Breakpoint" })
+vim.keymap.set('n', '<leader>dc', dap.continue, { desc = "Debug: Iniciar/Continuar" })
+vim.keymap.set('n', '<leader>dn', dap.step_over, { desc = "Debug: Saltar línea" })
+vim.keymap.set('n', '<leader>di', dap.step_into, { desc = "Debug: Entrar a función" })
+vim.keymap.set('n', '<leader>do', dap.step_out, { desc = "Debug: Salir de función" })
+vim.keymap.set('n', '<leader>dr', dap.restart, { desc = "Debug: Reiniciar" })
+vim.keymap.set('n', '<leader>du', function() require('dapui').toggle() end, { desc = "Interfaz de Debug" })
+
+-- DAP Go (Tests)
+vim.keymap.set('n', '<leader>gt', function() require('dap-go').debug_test() end, { desc = "Debug Test Go" })
+
+-- =============================================================================
+-- OTROS: TERMINAL, GIT, HTTP Y SNIPPETS
+-- =============================================================================
+vim.keymap.set('n', '<leader>gg', ':term lazygit<CR>', { desc = "Lazygit" })
+vim.keymap.set('n', '<leader>hr', function() require('kulala').run() end, { desc = "Petición HTTP" })
+vim.keymap.set('t', '<Esc><Esc>', [[<C-\><C-n>]], { desc = "Salir modo terminal" })
+
+-- Luasnip (Navegación dentro de Snippets)
+local ls = require("luasnip")
+vim.keymap.set({"i", "s"}, "<C-k>", function() if ls.expand_or_jumpable() then ls.expand_or_jump() end end)
+vim.keymap.set({"i", "s"}, "<C-j>", function() if ls.jumpable(-1) then ls.jump(-1) end end)
+
+-- Plegado (UFO)
+vim.keymap.set('n', '<leader>zz', 'za', { desc = "Plegar bloque" })
+vim.keymap.set('n', 'zk', function() require('ufo').peekFoldedLinesUnderCursor() end, { desc = "Vista previa pliegue" })
 
 
+-- Abrir la guía de teclas en un split vertical
+vim.keymap.set('n', '<leader>?', function()
+    local path = vim.fn.stdpath("config") .. "/CHEATSHEET.md"
+    vim.cmd("vsplit " .. path)
+end, { desc = "Ver Guía de Atajos" })

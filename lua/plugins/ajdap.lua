@@ -1,11 +1,11 @@
 
 local function conf()
   local dap = require("dap")
-  dap.adapters.node2 = {
-    type = 'server',
-    command = 'node',
-    args = {vim.fn.expand('$HOME/.local/share/nvim/mason/packages/node-debug2-adapter/out/src/nodeDebug.js')},
-  }
+--  dap.adapters.node2 = {
+  --  type = 'server',
+    --command = 'node',
+  --  args = {vim.fn.expand('$HOME/.local/share/nvim/mason/packages/node-debug2-adapter/out/src/nodeDebug.js')},
+  --}
   dap.adapters["pwa-node"] = {
     type = 'server',
     host = '127.0.0.1',

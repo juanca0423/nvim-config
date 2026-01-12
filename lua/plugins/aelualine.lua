@@ -1,6 +1,18 @@
+-- Función para obtener el estado de Harpoon
+local function harpoon_status()
+    local harpoon = require("harpoon")
+    local marks = harpoon:list().items
+    local current_file_path = vim.fn.expand("%:p:.")
+    for i, item in ipairs(marks) do
+        if item.value == current_file_path then
+            return "󰛢 " .. i -- Muestra un icono de arpón y el número
+        end
+    end
+    return ""
+end
+
 local function conf()
   ---@diagnostic disable-next-line: undefined-field
-  ---require('lualine').setup({ ... }))
   require('lualine').setup({
     options = {
       theme = 'catppuccin',
@@ -11,7 +23,8 @@ local function conf()
       lualine_a = { 'mode' },
       lualine_b = { 'branch', 'diff' },
       lualine_c = {
-        { 'filename', file_status = true, path = 1}
+        { 'filename', file_status = true, path = 1},
+        { harpoon_status, color = { fg = "#ff007c", gui = "bold" } }
       },
       lualine_x = {
         {

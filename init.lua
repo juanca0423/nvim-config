@@ -1,45 +1,49 @@
--- ~/.config/nvim/init.lua
+
+-- Leader primero
 vim.g.mapleader = ","
+
+-- 1. Carga de Lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
----@diagnostic disable-next-line: undefined-field
 if not vim.uv.fs_stat(lazypath) then
-  vim.fn.system({
-    "git", "clone", "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", lazypath,
-  })
+  vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath })
 end
 vim.opt.rtp:prepend(lazypath)
--- ~/.config/nvim/init.lua  (arriba del return de plugins)
-vim.g["test#go#recognize_tests"] = 1   -- obliga a reconocer tests
--- 1. lazy con prioridad para nuestras queries
-require("lazy").setup("plugins")
 
--- 2. resto de tu config
+-- 2. Plugins
+require("lazy").setup("plugins", { rocks = { enabled = false } })
+
+-- 3. Opciones y Mapas
 vim.opt.termguicolors = true
 vim.opt.background = "dark"
-require("mapas")
-require("opciones")
 vim.o.clipboard = "unnamedplus"
 
--- resaltar yank
+require("mapas")
+require("opciones")
+require("config.misnipet") -- Asegúrate de que aquí 'f' sea 'function_node'
+
+-- 4. Autocomandos y Fixes
+-- Resaltar yank
 vim.api.nvim_create_autocmd("TextYankPost", {
-  desc = "Resaltar texto al copiar",
+  callback = function() vim.highlight.on_yank({ timeout = 200 }) end,
+})
+
+-- Formateo automático al guardar
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = { "*.go", "*.js", "*.ts", "*.hbs", "*.html", "*.css" },
   callback = function()
-    vim.highlight.on_yank({ higroup = "IncSearch", timeout = 200 })
+    pcall(function() vim.lsp.buf.format({ timeout_ms = 1000 }) end)
   end,
 })
 
--- formateo Go al guardar
-vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = "*.go",
-  callback = function() vim.lsp.buf.format() end,
-})
+-- Handlebars / Glimmer Config
+vim.filetype.add({ extension = { hbs = "handlebars" } })
+vim.treesitter.language.register('glimmer', 'handlebars')
 
--- asegurar que treesitter arranque en Go
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "go",
+-- Forzar resaltado en Handlebars
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = "*.hbs",
   callback = function()
-    vim.defer_fn(function() vim.treesitter.start() end, 10)
+    vim.bo.filetype = "handlebars"
+    pcall(vim.treesitter.start)
   end,
 })
