@@ -1,27 +1,46 @@
-return{
+return {
   "catppuccin/nvim",
   name = "catppuccin",
-  priority = 1000, -- Cargar antes que lo demásconfi
+  priority = 1000,
   config = function()
     require("catppuccin").setup({
-      flavour = "latte", -- latte, frappe, macchiato, mocha
-      term_colors = true, -- Esto ayuda a que los colores resalten más en terminal
-      integrations={
-        bufferline=true,
-      }
+      -- Cambié a 'mocha' (oscuro) porque en pantallas OLED/Móvil se ve mejor,
+      -- pero si prefieres claro, vuelve a poner 'latte'.
+      flavour = "mocha",
+      term_colors = true,
+      transparent_background = false,
+      integrations = {
+        bufferline = true,
+        treesitter = true,
+        mason = true,
+        nvimtree = true,
+        telescope = { enabled = true },
+        lsp_trouble = true,
+        which_key = true,
+      },
+      -- AQUÍ es donde forzamos los colores de los números
+
+      custom_highlights = function(colors)
+        return {
+          -- 1. El número donde estás parado (Naranja brillante)
+          CursorLineNr = { fg = colors.peach, bold = true },
+
+          -- 2. LOS NÚMEROS DE LAS DEMÁS LÍNEAS (Aquí estaba el problema)
+          -- 'overlay1' es muy suave, usemos 'subtext0' o un color directo
+          LineNr = { fg = colors.subtext0, bold = false },
+
+          -- 3. La columna de los símbolos de Git (La que ves con '2┃')
+          -- La ponemos transparente para que no cree un bloque de color distinto
+          SignColumn = { bg = colors.none },
+
+          -- 4. Si quieres que los símbolos de Git también resalten:
+          GitSignsAdd = { fg = colors.green },
+          GitSignsChange = { fg = colors.yellow },
+          GitSignsDelete = { fg = colors.red },
+        }
+      end,
     })
+
     vim.cmd.colorscheme "catppuccin"
-  end
---ranja claro
---vim.api.nvim_set_hl(0, "CursorLineNr", { fg = "#F9E2AF", bold = true }) -- amarilloSobrescribe solo el grupo de los
---números de línea
---vim.api.nvim_set_hl(0, "LineNr",       { fg = "#FAB387", bold = true }) -- naranja claroi
---blue  sky / sapphire
---green green / teal
---peach red / maroon
---yellow  flamingo / rosewater
---
---vim.api.nvim_set_hl(0, "FoldColumn", { fg = colors.red,     bg = colors.mantle })
--- vim.api.nvim_set_hl(0, "SignColumn", { fg = colors.teal,    bg = colors.mantle })
---vim.api.nvim_set_hl(0, "LineNr",     { fg = colors.flamingo, bold = true })
+  end,
 }
