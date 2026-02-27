@@ -1,53 +1,46 @@
-return{
-  'nvim-telescope/telescope.nvim',
-  dependencies = {'nvim-lua/plenary.nvim'},
-  config = function()
-
--- lua/config/telescope.lua
-  require('telescope').setup({
-    defaults = {
-      layout_strategy = "vertical",
-      layout_config = {
-        vertical={
-          mirror=true,
-          prompt_position="top",
-        }
-      },
-      sorting_strategy = "ascending",
-    },
-  })
-
--- Al final de lua/config/telescope.lua
-  require('telescope').load_extension('fzf')
-  require('telescope').load_extension('ui-select')
--- Dentro de la configuración de Telescope o Yanky
-  require("telescope").load_extension("yank_history")
-  end,
+return {
   {
-    'nvim-telescope/telescope-fzf-native.nvim',
-     build = 'make'
-  },
-    -- Extensión 2: UI-Select para menús bonitos 🎨
-  {
-    'nvim-telescope/telescope-ui-select.nvim'
-  },
-    -- LSP: El motor de inteligencia 🧠
-  {
-    "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim",
-    "neovim/nvim-lspconfig",
-  },
-    -- Autocompletado ⌨️
-  {
-    "hrsh7th/nvim-cmp",
+    'nvim-telescope/telescope.nvim',
     dependencies = {
-      "hrsh7th/cmp-nvim-lsp", -- Fuente para el LSP
-      "hrsh7th/cmp-path",     -- Fuente para rutas de archivos
-      "L3MON4D3/LuaSnip",     -- Motor de snippets (necesario)
-      "saadparwaiz1/cmp_luasnip",
+      'nvim-lua/plenary.nvim',
+      { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+      'nvim-telescope/telescope-ui-select.nvim',
     },
-  },
-  { "lspkind.nvim",},
-  { 'onsails/lspkind.nvim' },
-  { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      local telescope = require('telescope')
+
+      telescope.setup({
+        defaults = {
+          layout_strategy = "vertical",
+          layout_config = {
+            vertical = {
+              mirror = true,        -- El prompt arriba, los resultados abajo
+              prompt_position = "top",
+              preview_height = 0.4, -- Da más espacio a la lista en pantallas pequeñas
+            }
+          },
+          sorting_strategy = "ascending",
+          -- Ignorar archivos pesados o binarios
+          file_ignore_patterns = { "node_modules", ".git/", "target/" },
+        },
+        extensions = {
+          ["ui-select"] = {
+            require("telescope.themes").get_dropdown({}),
+          }
+        }
+      })
+
+      -- Cargar extensiones (Nota: yanky solo si lo tienes instalado)
+      pcall(telescope.load_extension, 'fzf')
+      pcall(telescope.load_extension, 'ui-select')
+      pcall(telescope.load_extension, 'yank_history')
+
+      -- ATAJOS RÁPIDOS (Keymaps)
+      local builtin = require('telescope.builtin')
+      vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = "Buscar archivos" })
+      vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = "Buscar texto (grep)" })
+      vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = "Ver buffers abiertos" })
+      vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = "Buscar en la ayuda" })
+    end,
+  }
 }

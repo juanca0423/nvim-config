@@ -40,13 +40,13 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 -- Formateo automático al guardar
-vim.api.nvim_create_autocmd("BufWritePre", {
-  group = augroup,
-  pattern = { "*.go", "*.js", "*.ts", "*.hbs", "*.html", "*.css" },
-  callback = function(args)
-    pcall(function() vim.lsp.buf.format({ bufnr = args.buf, timeout_ms = 1000 }) end)
-  end,
-})
+--vim.api.nvim_create_autocmd("BufWritePre", {
+--  group = augroup,
+--  pattern = { "*.go", "*.js", "*.ts", "*.hbs", "*.html", "*.css" },
+--  callback = function(args)
+--    pcall(function() vim.lsp.buf.format({ bufnr = args.buf, timeout_ms = 1000 }) end)
+--  end,
+--})
 
 -- Handlebars / Glimmer Config
 vim.filetype.add({ extension = { hbs = "handlebars" } })
@@ -72,3 +72,46 @@ vim.filetype.add({
     gotmpl = "gotmpl",
   },
 })
+
+
+local cheatsheet_path = vim.fn.stdpath("config") .. "/CHEATSHEET.md"
+local f = io.open(cheatsheet_path, "r")
+
+if f == nil then
+  local file = io.open(cheatsheet_path, "w")
+  if file then
+    file:write([[
+# ⌨️ Neovim + Termux Pro Cheat Sheet
+
+### 🚀 Generales y Navegación
+| Tecla | Acción |
+| :--- | :--- |
+| `<leader>w` | Guardar archivo actual |
+| `<leader>W` | Guardar y salir (`:wq`) |
+| `<leader>q` | Cerrar Buffer actual |
+| `Ctrl + n`  | Abrir/Cerrar explorador |
+| `Tab`       | Siguiente pestaña |
+| `S-Tab`     | Pestaña anterior |
+| `<leader>?` | **Ver esta guía** |
+
+### 🔍 Buscadores (Telescope)
+| Tecla | Acción |
+| :--- | :--- |
+| `<leader>ff` | Buscar archivos |
+| `<leader>fg` | Buscar texto (Grep) |
+| `<leader>h`  | Historial de copiado |
+
+### 💡 Inteligencia (LSP)
+| Tecla | Acción |
+| :--- | :--- |
+| `gd` | Ir a Definición |
+| `gr` | Ver Referencias |
+| `K`  | Ver documentación |
+| `<leader>rn` | Renombrar variable |
+| `<leader>ca` | Arreglar errores |
+]])
+    file:close()
+  end
+else
+  f:close()
+end

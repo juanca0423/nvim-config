@@ -1,20 +1,19 @@
 -- ~/.config/nvim/lua/plugins/cmp.lua
+
 return {
-  'hrsh7th/nvim-cmp',
+  "hrsh7th/nvim-cmp",
+  event = "InsertEnter", -- Se carga solo cuando vas a escribir
   dependencies = {
-    'hrsh7th/cmp-nvim-lsp',
-    'hrsh7th/cmp-path',
-    'L3MON4D3/LuaSnip',
-    'saadparwaiz1/cmp_luasnip',
-    'onsails/lspkind.nvim',
+    "hrsh7th/cmp-nvim-lsp",
+    "hrsh7th/cmp-path",
+    "hrsh7th/cmp-buffer",
+    "saadparwaiz1/cmp_luasnip",
+    "onsails/lspkind.nvim", -- Iconos para el menú
   },
   config = function()
-    local cmp = require('cmp')
-    local lspkind = require('lspkind')
-    local luasnip = require('luasnip')
-
-    -- snippets vscode-style
-    require('luasnip.loaders.from_vscode').lazy_load()
+    local cmp = require("cmp")
+    local lspkind = require("lspkind")
+    local luasnip = require("luasnip")
 
     cmp.setup({
       snippet = {
@@ -23,45 +22,49 @@ return {
         end,
       },
       mapping = cmp.mapping.preset.insert({
-        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-f>'] = cmp.mapping.scroll_docs(4),
-        ['<C-Space>'] = cmp.mapping.complete(),
-        ['<CR>'] = cmp.mapping.confirm({ select = true }),
-        ['<Tab>'] = cmp.mapping.select_next_item(),
-        ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+        ["<C-d>"] = cmp.mapping.scroll_docs(-4),
+        ["<C-f>"] = cmp.mapping.scroll_docs(4),
+        ["<C-Space>"] = cmp.mapping.complete(),
+        ["<C-e>"] = cmp.mapping.abort(),
+        ["<CR>"] = cmp.mapping.confirm({ select = true }),
+        -- Navegación con Tab (Perfecto para Termux)
+        ["<Tab>"] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_next_item()
+          elseif luasnip.expand_or_jumpable() then
+            luasnip.expand_or_jump()
+          else
+            fallback()
+          end
+        end, { "i", "s" }),
+        ["<S-Tab>"] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_prev_item()
+          elseif luasnip.jumpable(-1) then
+            luasnip.jump(-1)
+          else
+            fallback()
+          end
+        end, { "i", "s" }),
       }),
-      completion = {
-        autocomplete = { cmp.TriggerEvent.TextChanged },
-        keyword_length = 1,
-      },
+      sources = cmp.config.sources({
+        { name = "nvim_lsp", priority = 1000 },
+        { name = "luasnip",  priority = 750 },
+        { name = "path",     priority = 500 },
+      }, {
+        { name = "buffer", priority = 250 },
+      }),
       formatting = {
-        fields = { 'kind', 'abbr', 'menu' },
         format = lspkind.cmp_format({
-          mode = 'symbol_text',
+          mode = "symbol_text",
           maxwidth = 50,
-          ellipsis_char = '…',
+          ellipsis_char = "...",
         }),
       },
-      sources = cmp.config.sources({
-        { name = 'nvim_lsp' },
-        { name = 'luasnip' },
-        { name = 'path' },
-      }, {
-        { name = 'buffer' },
-      }),
-    })
-
-    -- autopairs
-    local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-    cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
-
-    -- ejemplo de snippet Go
-    luasnip.add_snippets('go', {
-      luasnip.snippet('iferr', {
-        luasnip.text_node('if err != nil {'),
-        luasnip.insert_node(1, 'return err'),
-        luasnip.text_node({ '', '}' }),
-      }),
+      window = {
+        completion = cmp.config.window.bordered(),
+        documentation = cmp.config.window.bordered(),
+      },
     })
   end,
 }
