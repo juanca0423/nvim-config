@@ -24,14 +24,14 @@ local f = ls.function_node -- Importamos el nodo de función
   en el tag de la DB se escriba 'user_name'.
 ]]
 
- local function snake_case(args)
-    local text = args[1][1] or ""
-    -- Pasamos a minúsculas
-    text = string.lower(text)
-    -- Reemplazamos espacios por guiones bajos
-    text = string.gsub(text, " ", "_")
-    return text
-  end
+local function snake_case(args)
+  local text = args[1][1] or ""
+  -- Inserta un guion bajo antes de cada mayúscula (excepto la primera) y pasa todo a minúscula
+  text = text:gsub("(%l)(%u)", "%1_%2"):lower()
+  -- Reemplaza espacios por guiones bajos por si acaso
+  text = text:gsub("%s+", "_")
+  return text
+end
 
 ls.add_snippets("handlebars", {
   -- Snippet para la estructura base: Escribe 'hbs!!' y presiona Tab
@@ -56,8 +56,6 @@ ls.add_snippets("handlebars", {
     t({"", "{{/each}}"}),
   }),
 })
-
-
 
 ls.add_snippets("go", {
   -- El famoso 'if err != nil'

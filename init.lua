@@ -39,17 +39,6 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   callback = function() vim.hl.on_yank({ timeout = 200 }) end,
 })
 
--- Formateo automático al guardar
---vim.api.nvim_create_autocmd("BufWritePre", {
---  group = augroup,
---  pattern = { "*.go", "*.js", "*.ts", "*.hbs", "*.html", "*.css" },
---  callback = function(args)
---    pcall(function() vim.lsp.buf.format({ bufnr = args.buf, timeout_ms = 1000 }) end)
---  end,
---})
-
--- Handlebars / Glimmer Config
-vim.filetype.add({ extension = { hbs = "handlebars" } })
 -- Si usas nvim-treesitter, asegúrate de tener instalado el parser de glimmer
 vim.treesitter.language.register('glimmer', 'handlebars')
 
@@ -63,16 +52,17 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   end,
 })
 
--- Añade esto para registrar los tipos de archivo que faltan
+-- Registro de tipos de archivo para limpiar Warnings del LspHealth
 vim.filetype.add({
   extension = {
-    hbs = "handlebars",
-    handlebars = "handlebars",
-    gowork = "gowork",
-    gotmpl = "gotmpl",
+    hbs = 'handlebars',
+    handlebars = 'handlebars',
+    pug = 'pug',
+    templ = 'templ',
+    gowork = 'gowork',
+    gotmpl = 'gotmpl',
   },
 })
-
 
 local cheatsheet_path = vim.fn.stdpath("config") .. "/CHEATSHEET.md"
 local f = io.open(cheatsheet_path, "r")
@@ -115,3 +105,33 @@ if f == nil then
 else
   f:close()
 end
+
+-- Función para sincronizar configuración con GitHub usando nvsync
+local function sync_config()
+  print("🚀 Iniciando sincronización con GitHub...")
+
+  -- Ejecutamos nvsync a través de zsh para que reconozca el alias
+  -- Usamos vim.fn.jobstart para que no bloquee Neovim mientras sube
+  vim.fn.jobstart("zsh -i -c 'nvsync'", {
+    on_stdout = function(_, data)
+      if data then
+        for _, line in ipairs(data) do
+          if line ~= "" then print(line) end
+        end
+      end
+    end,
+    on_exit = function(_, exit_code)
+      if exit_code == 0 then
+        print("✅ Sincronización completada con éxito.")
+      else
+        print("❌ Error en la sincronización. Revisa tu conexión o el repo.")
+      end
+    end,
+  })
+end
+
+-- Crear el comando para usarlo como :Sync
+vim.api.nvim_create_user_command("Sync", sync_config, {})
+
+-- Atajo de teclado: <leader>gs (Git Sync)
+vim.keymap.set("n", "<leader>gs", sync_config, { desc = "Sincronizar config con GitHub" })

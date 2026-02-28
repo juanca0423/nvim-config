@@ -4,39 +4,71 @@ return {
   priority = 1000,
   config = function()
     require("catppuccin").setup({
-      -- Cambié a 'mocha' (oscuro) porque en pantallas OLED/Móvil se ve mejor,
-      -- pero si prefieres claro, vuelve a poner 'latte'.
       flavour = "mocha",
-      term_colors = true,
+      background = { light = "latte", dark = "mocha" },
       transparent_background = false,
-      integrations = {
-        bufferline = true,
-        treesitter = true,
-        mason = true,
-        nvimtree = true,
-        telescope = { enabled = true },
-        lsp_trouble = true,
-        which_key = true,
+      show_end_of_buffer = false, -- Oculta las '~' al final del archivo
+      term_colors = true,
+
+      -- Mejoramos los estilos de los componentes
+      styles = {
+        comments = { "italic" },
+        conditionals = { "bold" },
+        loops = { "bold" },
+        functions = { "bold" },
+        keywords = { "italic" },
+        strings = {},
+        variables = {},
+        numbers = {},
+        booleans = { "bold", "italic" },
+        properties = {},
+        types = { "bold" },
+        operators = {},
       },
-      -- AQUÍ es donde forzamos los colores de los números
+
+      integrations = {
+        treesitter = true,
+        native_lsp = {
+          enabled = true,
+          virtual_text = {
+            errors = { "italic" },
+            hints = { "italic" },
+            warnings = { "italic" },
+            information = { "italic" },
+          },
+          underlines = {
+            errors = { "undercurl" }, -- Hace que el error sea una ondita, no una línea plana
+            warnings = { "undercurl" },
+          },
+        },
+        mason = true,
+        telescope = { enabled = true },
+        which_key = true,
+        gitsigns = true,
+        cmp = true,    -- Importante para que el menú de autocompletado se vea bien
+        fidget = true, -- Para la notificación de carga del LSP
+      },
 
       custom_highlights = function(colors)
         return {
-          -- 1. El número donde estás parado (Naranja brillante)
+          -- 1. Números de Línea (Tu mejora con esteroides)
           CursorLineNr = { fg = colors.peach, bold = true },
+          LineNr = { fg = colors.surface2 }, -- Un gris más visible que overlay pero sutil
 
-          -- 2. LOS NÚMEROS DE LAS DEMÁS LÍNEAS (Aquí estaba el problema)
-          -- 'overlay1' es muy suave, usemos 'subtext0' o un color directo
-          LineNr = { fg = colors.subtext0, bold = false },
-
-          -- 3. La columna de los símbolos de Git (La que ves con '2┃')
-          -- La ponemos transparente para que no cree un bloque de color distinto
+          -- 2. SignColumn y UI
           SignColumn = { bg = colors.none },
+          VertSplit = { fg = colors.surface0 }, -- Línea divisoria entre paneles más elegante
 
-          -- 4. Si quieres que los símbolos de Git también resalten:
-          GitSignsAdd = { fg = colors.green },
-          GitSignsChange = { fg = colors.yellow },
-          GitSignsDelete = { fg = colors.red },
+          -- 3. Resaltado de búsqueda (Más tipo "VIM" clásico pero estilo Catppuccin)
+          Search = { bg = colors.surface2, fg = colors.mauve, bold = true },
+          CurSearch = { bg = colors.mauve, fg = colors.base },
+
+          -- 4. Sugerencia de autocompletado (Ghost Text)
+          SuggestWidget = { fg = colors.surface2 },
+
+          -- 5. Pncctuación y Delimitadores (Para que el código se vea más limpio)
+          ["@punctuation.bracket"] = { fg = colors.overlay2 },
+          ["@punctuation.delimiter"] = { fg = colors.overlay2 },
         }
       end,
     })
