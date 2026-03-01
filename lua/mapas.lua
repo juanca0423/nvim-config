@@ -1,4 +1,3 @@
-
 -- =============================================================================
 -- KEYMAPS GENERALES (Archivos y Sistema)
 -- =============================================================================
@@ -39,7 +38,7 @@ vim.keymap.set('n', '<leader>fr', builtin.oldfiles, { desc = "Archivos Recientes
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = "Buscar Ayuda" })
 vim.keymap.set("n", "<leader>h", ":Telescope yank_history<CR>", { desc = "Historial de Portapapeles" })
 vim.keymap.set('n', '<leader>fn', function()
-    builtin.find_files({ cwd = vim.fn.stdpath("config") })
+  builtin.find_files({ cwd = vim.fn.stdpath("config") })
 end, { desc = 'Buscar en Config de Neovim' })
 
 -- =============================================================================
@@ -66,16 +65,31 @@ vim.keymap.set('t', '<Esc><Esc>', [[<C-\><C-n>]], { desc = "Salir modo terminal"
 
 -- Luasnip (Navegación dentro de Snippets)
 local ls = require("luasnip")
-vim.keymap.set({"i", "s"}, "<C-k>", function() if ls.expand_or_jumpable() then ls.expand_or_jump() end end)
-vim.keymap.set({"i", "s"}, "<C-j>", function() if ls.jumpable(-1) then ls.jump(-1) end end)
+vim.keymap.set({ "i", "s" }, "<C-k>", function() if ls.expand_or_jumpable() then ls.expand_or_jump() end end)
+vim.keymap.set({ "i", "s" }, "<C-j>", function() if ls.jumpable(-1) then ls.jump(-1) end end)
 
 -- Plegado (UFO)
 vim.keymap.set('n', '<leader>zz', 'za', { desc = "Plegar bloque" })
 vim.keymap.set('n', 'zk', function() require('ufo').peekFoldedLinesUnderCursor() end, { desc = "Vista previa pliegue" })
 
+-- Ejecutar la línea actual de SQL o el bloque seleccionado
+vim.keymap.set("v", "<leader>rq", ":DB<CR>", { desc = "Ejecutar consulta SQL (Visual)" })
+vim.keymap.set("n", "<leader>rq", "V:DB<CR>", { desc = "Ejecutar línea SQL actual" })
+
+-- Ejecutar consulta y guardar como JSON (selecciona el SQL en modo visual y presiona ,bj)
+vim.keymap.set("v", "<leader>bj", ":DB --format json<CR>", { desc = "Resultado SQL a JSON" })
+
+-- Si quieres que se guarde en un archivo físico automáticamente:
+vim.api.nvim_create_user_command('SqlToJson', function()
+  local file = vim.fn.input('Nombre del archivo (ej: datos.json): ')
+  if file ~= "" then
+    vim.cmd('vno <leader>bj :DB --format json > ' .. file .. '<CR>')
+    print("\n[SQL] Resultado se guardará en " .. file)
+  end
+end, {})
 
 -- Abrir la guía de teclas en un split vertical
 vim.keymap.set('n', '<leader>?', function()
-    local path = vim.fn.stdpath("config") .. "/CHEATSHEET.md"
-    vim.cmd("vsplit " .. path)
+  local path = vim.fn.stdpath("config") .. "/CHEATSHEET.md"
+  vim.cmd("vsplit " .. path)
 end, { desc = "Ver Guía de Atajos" })

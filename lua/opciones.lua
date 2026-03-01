@@ -69,3 +69,19 @@ vim.diagnostic.config({
     focusable = false,
   },
 })
+
+
+-- Limpiador automático de lsp.log (Optimización para Termux)
+local lsp_log_path = vim.fn.stdpath("state") .. "/lsp.log"
+local max_size = 1024 * 1024 -- 1 Megabyte
+
+local f = io.open(lsp_log_path, "r")
+if f then
+  local size = f:seek("end")
+  f:close()
+  if size > max_size then
+    os.remove(lsp_log_path)
+    -- Opcional: imprimir aviso discreto
+    print("LSP Log limpiado (era > 1MB)")
+  end
+end

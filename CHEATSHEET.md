@@ -11,14 +11,12 @@
 | `S-Tab`     | Pestaña anterior |
 | `<leader>?` | **Ver esta guía** |
 
-
 ### 🔍 Buscadores (Telescope)
 | Tecla | Acción |
 | :--- | :--- |
 | `<leader>ff` | Buscar archivos |
 | `<leader>fg` | Buscar texto (Grep) |
 | `<leader>h`  | Historial de copiado |
-
 
 ### 💡 Inteligencia (LSP)
 | Tecla | Acción |
@@ -28,5 +26,3 @@
 | `K`  | Ver documentación |
 | `<leader>rn` | Renombrar variable |
 | `<leader>ca` | Arreglar errores |
-
-
