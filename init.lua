@@ -1,6 +1,9 @@
 vim.g.mapleader = ","
 
--- 1. Carga de Lazy.nvim con corrección para el linter
+-- ============================================
+-- REGISTRO DE FILETYPES (ANTES de cargar plugins)
+-- ============================================
+require("config.filetypes")
 local lazypath = vim.fn.stdpath("data") --[[@as string]] .. "/lazy/lazy.nvim"
 local stat = vim.uv.fs_stat(lazypath)
 
@@ -16,14 +19,12 @@ if not stat then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- 2. Plugins
--- Nota: 'rocks.enabled = false' es bueno para evitar problemas de dependencias de Lua externas
 require("lazy").setup("plugins", { rocks = { enabled = false } })
 
 -- 3. Opciones y Mapas
 vim.opt.termguicolors = true
 vim.opt.background = "dark"
-vim.o.clipboard = "unnamedplus"
+vim.opt.clipboard = "unnamedplus"
 
 -- Carga de módulos externos
 require("mapas")
@@ -37,31 +38,6 @@ local augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = augroup,
   callback = function() vim.hl.on_yank({ timeout = 200 }) end,
-})
-
--- Si usas nvim-treesitter, asegúrate de tener instalado el parser de glimmer
-vim.treesitter.language.register('glimmer', 'handlebars')
-
--- Forzar resaltado en Handlebars
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-  group = augroup,
-  pattern = "*.hbs",
-  callback = function()
-    vim.bo.filetype = "handlebars"
-    pcall(vim.treesitter.start)
-  end,
-})
-
--- Registro de tipos de archivo para limpiar Warnings del LspHealth
-vim.filetype.add({
-  extension = {
-    hbs = 'handlebars',
-    handlebars = 'handlebars',
-    pug = 'pug',
-    templ = 'templ',
-    gowork = 'gowork',
-    gotmpl = 'gotmpl',
-  },
 })
 
 local cheatsheet_path = vim.fn.stdpath("config") .. "/CHEATSHEET.md"

@@ -2,7 +2,11 @@
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_node_provider = 0 -- También puedes desactivarlo si no usas plugins de Node antiguos
-vim.g.python3_host_prog = '/data/data/com.termux/files/usr/bin/python3'
+
+
+if vim.fn.executable('python3') == 1 then
+  vim.g.python3_host_prog = vim.fn.exepath('python3')
+end
 
 -- Portapapeles (VITAL para Termux)
 vim.opt.clipboard = "unnamedplus"

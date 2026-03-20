@@ -1,7 +1,7 @@
 -- ~/.config/nvim/lua/plugins/lsp.lua
-
 return {
   "neovim/nvim-lspconfig",
+  event = { "BufReadPre", "BufNewFile" },
   dependencies = {
     "williamboman/mason.nvim",
     "williamboman/mason-lspconfig.nvim",
@@ -10,8 +10,6 @@ return {
     { "bilal2453/luvit-meta", lazy = true },
   },
   config = function()
-    -- --- 0. REGISTRO DE TIPOS DE ARCHIVO (Limpia los Warnings del checkhealth) ---
-    -- Esto le dice a Neovim que "hbs" y "handlebars" son nombres válidos.
     vim.filetype.add({
       extension = {
         hbs = 'handlebars',
@@ -23,10 +21,10 @@ return {
 
     require("mason").setup()
     require("mason-lspconfig").setup({
-      -- Quitamos lua_ls de aquí para usar el de 'pkg' de Termux
       ensure_installed = { "gopls", "pyright", "ts_ls" }
     })
 
+    -- Solo una asignación de capabilities
     local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
     -- Servidores a configurar
@@ -34,6 +32,60 @@ return {
 
     for _, server in ipairs(servers) do
       local opts = { capabilities = capabilities }
+
+      -- ============================================
+      -- TYPESCRIPT / JAVASCRIPT (ts_ls)
+      -- ============================================
+      if server == "ts_ls" then
+        opts.filetypes = { -- ← opts.filetypes, no capabilities
+          "javascript",
+          "javascriptreact",
+          "javascript.jsx",
+          "typescript",
+          "typescriptreact",
+          "typescript.tsx"
+        }
+        opts.settings = {
+          typescript = {
+            inlayHints = {
+              includeInlayParameterNameHints = "all",
+              includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+              includeInlayFunctionParameterTypeHints = true,
+              includeInlayVariableTypeHints = true,
+            },
+          },
+          javascript = {
+            inlayHints = {
+              includeInlayParameterNameHints = "all",
+              includeInlayVariableTypeHints = true,
+            },
+          },
+        }
+      end
+
+      -- ============================================
+      -- HTML + PUG + HANDLEBARS
+      -- ============================================
+      if server == "html" then -- ← server, no servers
+        opts.filetypes = { "html", "templ", "pug", "handlebars" }
+      end                      -- ← sin coma aquí
+
+      -- Emmet para expansión de código HTML/CSS
+      if server == "emmet_language_server" then
+        opts.filetypes = {
+          "html", "css", "scss",
+          "pug", "handlebars",
+          "javascriptreact", "typescriptreact"
+        }
+      end -- ← faltaba este end
+
+      -- ============================================
+      -- CSS
+      -- ============================================
+      -- cssls no necesita configuración especial, usa opts por defecto
+      if server == "cssls" then
+        -- opts por defecto está bien
+      end
 
       -- Personalizaciones por servidor
       if server == "lua_ls" then
@@ -49,15 +101,17 @@ return {
         opts.filetypes = { "go", "gomod", "gowork", "gotmpl" }
       end
 
-      -- NUEVA FORMA (Neovim 0.11+)
-      -- 1. Configuramos el servidor
       vim.lsp.config(server, opts)
-      -- 2. Lo habilitamos
       vim.lsp.enable(server)
     end
-    -- --- LÓGICA DE FORMATEO (Mantenemos tu lógica unificada) ---
-    local lsp_fmt_group = vim.api.nvim_create_augroup("LspFormatGroup", { clear = true })
 
+    -- ============================================
+    -- AUTOCOMMANDS DE FORMATO Y KEYMAPS
+    -- ============================================
+    local lsp_fmt_group = vim.api.nvim_create_augroup("LspFormatGroup", { clear = true })
+    local lsp_keymap_group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true })
+
+    -- Formato al guardar
     vim.api.nvim_create_autocmd("LspAttach", {
       group = lsp_fmt_group,
       callback = function(args)
@@ -94,6 +148,33 @@ return {
             end
           end,
         })
+      end,
+    })
+
+    -- ============================================
+    -- KEYMAPS DE LSP
+    -- ============================================
+    vim.api.nvim_create_autocmd("LspAttach", {
+      group = lsp_keymap_group,
+      callback = function(ev)
+        local opts = { buffer = ev.buf, silent = true }
+
+        -- Navegación
+        vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+        vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+        vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+        vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+
+        -- Documentación
+        vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+        vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
+
+        -- Acciones
+        vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+        vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+        vim.keymap.set("n", "<leader>f", function()
+          vim.lsp.buf.format({ async = true })
+        end, opts)
       end,
     })
   end,

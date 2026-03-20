@@ -44,12 +44,41 @@ ls.add_snippets("handlebars", {
     t({ "", "</body>", "</html>" }),
   }),
 
+  -- Snippet: row -> Fila de tabla contable estándar
+  s("row", {
+    t("<tr>"),
+    t({ "", "  <td>" }), i(1, "Descripcion"), t("</td>"),
+    t({ "", "  <td class='text-end'>{{formatCurrency " }), i(2, "valor"), t("}}</td>"),
+    t({ "", "</tr>" }),
+  }),
+
   s("hif", {                                 -- "hif" es lo que escribes para activar
     t("{{#if "), i(1, "condicion"), t("}}"), -- El cursor empieza en 'condicion'
     t({ "", "  " }), i(0),                   -- Al saltar, va al centro (el 0 es el final)
     t({ "", "{{/if}}" }),                    -- Texto de cierre
   }),
 
+  -- Snippet para {{#if}} ... {{else}} ... {{/if}}
+  s("ife", {
+    t("{{#if "), i(1, "condicion"), t("}}"),
+    t({ "", "  " }), i(2),
+    t({ "", "{{else}}", "  " }), i(3),
+    t({ "", "{{/if}}" }),
+  }),
+
+  -- Snippet para {{#each}} ... {{/each}}
+  s("eac", {
+    t("{{#each "), i(1, "array"), t("}}"),
+    t({ "", "  " }), i(2, ""),
+    t({ "", "{{/each}}" }),
+  }),
+
+  -- Snippet para un {{#if}} simple (sin else)
+  s("if", {
+    t("{{#if "), i(1, "condicion"), t("}}"),
+    t({ "", "  " }), i(2),
+    t({ "", "{{/if}}" }),
+  }),
   -- Snippet para un Each: Escribe 'heach' y presiona Tab
   s("heach", {
     t("{{#each "), i(1, "items"), t("}}"),

@@ -4,25 +4,52 @@ return {
   event = { "BufReadPost", "BufNewFile" },
   dependencies = {
     "windwp/nvim-ts-autotag",
+    "nvim-treesitter/nvim-treesitter-textobjects",
   },
   config = function()
-    -- BLOQUE DE SEGURIDAD: Evita que el error bloquee Neovim
-    local ok, configs = pcall(require, "nvim-treesitter.configs")
-    if not ok then
-      return -- Si falla, no hace nada y no lanza el error rojo
+    -- IMPORTANTE: En versiones nuevas, a veces el modulo se carga distinto.
+    -- Intentamos cargar el setup de forma segura.
+    local status_ok, configs = pcall(require, "nvim-treesitter.configs")
+    if not status_ok then
+      return   -- Si falla, no rompe el inicio de Neovim
     end
 
-    -- Configuración del compilador para Termux
+    -- Configuraciones específicas para Termux (Compilador)
     require('nvim-treesitter.install').prefer_git = true
     require('nvim-treesitter.install').compilers = { "clang" }
 
     configs.setup({
-      ensure_installed = { "lua", "javascript", "html", "css", "go", "glimmer" },
-      highlight = { enable = true },
+      -- Asegúrate de incluir 'go' y 'handlebars' aquí
+      ensure_installed = {
+        "lua", "go", "javascript", "typescript", "tsx",
+        "html", "css", "handlebars", "glimmer", "json"
+      },
+      highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+      },
       indent = { enable = true },
       autotag = { enable = true },
+
+      -- Activamos los saltos de funciones [f y ]f
+      textobjects = {
+        move = {
+          enable = true,
+          set_jumps = true,
+          goto_next_start = {
+            ["]f"] = "@function.outer",
+            ["]m"] = "@method.outer",
+          },
+          goto_previous_start = {
+            ["[f"] = "@function.outer",
+            ["[m"] = "@method.outer",
+          },
+        },
+      },
     })
 
-    vim.treesitter.language.register('glimmer', 'handlebars')
+    -- Registrar lenguajes manualmente para evitar fallos en vistas .hbs
+    vim.treesitter.language.register("glimmer", "handlebars")
+    vim.treesitter.language.register("javascript", "javascriptreact")
   end,
 }

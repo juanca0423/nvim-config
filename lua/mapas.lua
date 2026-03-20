@@ -93,3 +93,17 @@ vim.keymap.set('n', '<leader>?', function()
   local path = vim.fn.stdpath("config") .. "/CHEATSHEET.md"
   vim.cmd("vsplit " .. path)
 end, { desc = "Ver Guía de Atajos" })
+
+
+-- Saltar al siguiente bloque {{#...}} o {{/...}}
+vim.keymap.set('n', ']]', [[/{{[#/].*}}<CR>]], { silent = true })
+
+vim.keymap.set('n', '[[', [[?{{[#/].*}}<CR>]], { silent = true })
+
+-- Saltar a la siguiente función (Go: func, JS: function/const name =)
+vim.keymap.set('n', 'gf', [[/\vfunc|function|const.* \=\>|async\s+function<CR>]],
+  { desc = 'Siguiente Función', silent = true })
+
+-- Saltar a la función anterior
+vim.keymap.set('n', 'ga', [[?\vfunc|function|const.* \=\>|async\s+function<CR>]],
+  { desc = 'Función Anterior', silent = true })

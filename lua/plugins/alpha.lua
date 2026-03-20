@@ -1,4 +1,3 @@
-
 return {
   'goolord/alpha-nvim',
   dependencies = { 'nvim-tree/nvim-web-devicons' },
@@ -38,9 +37,9 @@ return {
 
     -- COLORES (Ajuste para Catppuccin Mocha)
     -- "Comment" lo hace ver gris oscuro/azulino, muy elegante
-    dashboard.section.header.opts.hl = "Character" 
+    dashboard.section.header.opts.hl = "Character"
     dashboard.section.footer.opts.hl = "Comment"
-    
+
     -- Hacer que los botones no brillen tanto
     for _, button in ipairs(dashboard.section.buttons.val) do
       button.opts.hl = "Keyword"
