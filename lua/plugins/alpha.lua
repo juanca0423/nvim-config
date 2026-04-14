@@ -2,6 +2,13 @@ return {
   'goolord/alpha-nvim',
   dependencies = { 'nvim-tree/nvim-web-devicons' },
   config = function()
+    -- PARCHE: Neovim 0.12 eliminó tbl_flatten, lo redirigimos a la versión nueva
+    if not vim.tbl_flatten then
+      vim.tbl_flatten = function(t)
+        return vim.iter(t):flatten():totable()
+      end
+    end
+
     local dashboard = require('alpha.themes.dashboard')
 
     -- Arte ASCII minimalista (Gopher de Go)

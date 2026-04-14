@@ -2,7 +2,9 @@ vim.g.mapleader = ","
 
 -- ============================================
 -- REGISTRO DE FILETYPES (ANTES de cargar plugins)
--- ============================================
+-- ===========================================
+
+--vim.deprecate = function() end -- Esto apaga todos los avisos de "deprecated"
 require("config.filetypes")
 local lazypath = vim.fn.stdpath("data") --[[@as string]] .. "/lazy/lazy.nvim"
 local stat = vim.uv.fs_stat(lazypath)
